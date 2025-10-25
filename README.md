@@ -73,6 +73,7 @@ The application emphasizes performance, security, and user-friendly interfaces, 
 
 ### Clone the Repository
 git clone https://github.com/Ayush-Raj189/E-Commerce-.git
+
 cd e-commerce-project
 
 ### Backend Setup
