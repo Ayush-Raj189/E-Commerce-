@@ -100,25 +100,25 @@ const AddressComponent = ({setCurrentSelectedAddress, selectedId}) => {
   }, [dispatch, user?.id])
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
-      <Card className="shadow-lg border-2">
+    <div className="w-full">
+      <Card className="shadow-lg border-2 overflow-hidden">
         {/* Address Cards Section */}
-        <div className="p-4 sm:p-6 lg:p-8 border-b bg-gradient-to-r from-primary/5 to-primary/10">
+        <div className="p-4 sm:p-6 border-b bg-gradient-to-r from-primary/5 to-primary/10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <MapPin className="h-5 w-5 text-primary" />
             </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground truncate">
                 Your Addresses
               </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">
                 Manage up to 3 delivery addresses
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {addressList && addressList.length > 0 ? (
               addressList.map((singleAddressItem) => (
                 <AddressCard
@@ -132,12 +132,12 @@ const AddressComponent = ({setCurrentSelectedAddress, selectedId}) => {
               ))
             ) : (
               <div className="col-span-full">
-                <div className="flex flex-col items-center justify-center py-12 sm:py-16 text-center">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
                   <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-muted/50 flex items-center justify-center mb-4">
                     <MapPin className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/50" />
                   </div>
                   <h3 className="text-base sm:text-lg font-semibold mb-2">No addresses yet</h3>
-                  <p className="text-sm text-muted-foreground max-w-sm">
+                  <p className="text-sm text-muted-foreground max-w-sm px-4">
                     Add your first delivery address to get started with your orders
                   </p>
                 </div>
@@ -149,13 +149,13 @@ const AddressComponent = ({setCurrentSelectedAddress, selectedId}) => {
             <div className="mt-6 p-3 sm:p-4 bg-primary/5 border border-primary/20 rounded-lg flex items-start gap-3">
               <Plus className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-foreground break-words">
                   {addressList?.length === 0 
                     ? "Add your first address below" 
                     : `You can add ${3 - addressList.length} more ${addressList.length === 2 ? 'address' : 'addresses'}`
                   }
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-1 break-words">
                   Fill in the form below to add a new delivery address
                 </p>
               </div>
@@ -164,29 +164,30 @@ const AddressComponent = ({setCurrentSelectedAddress, selectedId}) => {
         </div>
 
         {/* Add/Edit Address Form */}
-        <CardHeader className="pb-4 px-4 sm:px-6 lg:px-8 pt-6">
-          <CardTitle className="text-lg sm:text-xl font-bold flex items-center gap-2">
-            {currentEditId !== null ? (
-              <>
+        <CardHeader className="pb-4 px-4 sm:px-6 pt-6 border-b">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              {currentEditId !== null ? (
                 <MapPin className="h-5 w-5 text-primary" />
-                Edit Address
-              </>
-            ) : (
-              <>
+              ) : (
                 <Plus className="h-5 w-5 text-primary" />
-                Add New Address
-              </>
-            )}
-          </CardTitle>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            {currentEditId !== null 
-              ? "Update your delivery address information" 
-              : "Enter your delivery address details"
-            }
-          </p>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-base sm:text-lg font-bold truncate">
+                {currentEditId !== null ? "Edit Address" : "Add New Address"}
+              </CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 break-words">
+                {currentEditId !== null 
+                  ? "Update your delivery address information" 
+                  : "Enter your delivery address details"
+                }
+              </p>
+            </div>
+          </div>
         </CardHeader>
 
-        <CardContent className="pb-6 sm:pb-8 px-4 sm:px-6 lg:px-8">
+        <CardContent className="p-4 sm:p-6">
           <CommonForm
             formData={formData}
             setFormData={setFormData}
