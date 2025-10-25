@@ -1,10 +1,11 @@
 const cloudinary = require("cloudinary").v2;
 const multer = require("multer");
 
+// ✅ Use environment variables for security
 cloudinary.config({
-    cloud_name: "dxb7vmgze",
-    api_key: "671955276947984",
-    api_secret: "-5zWBuPEg3q07cwFCdbH4DmyayE",
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const storage = multer.memoryStorage();

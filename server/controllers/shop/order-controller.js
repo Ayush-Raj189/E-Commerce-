@@ -1,8 +1,3 @@
-const paypal = require("../../helpers/paypal");
-const Order = require("../../models/Order");
-const Cart = require("../../models/Cart");
-const Product = require("../../models/Product");
-
 const createOrder = async (req, res) => {
     try {
         const {
@@ -20,14 +15,18 @@ const createOrder = async (req, res) => {
             cartId,
         } = req.body;
 
+        // ✅ Get client URL from environment variable
+        const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
         const create_payment_json = {
             intent: "sale",
             payer: {
                 payment_method: "paypal",
             },
             redirect_urls: {
-                return_url: "http://localhost:5173/shop/paypal-return",
-                cancel_url: "http://localhost:5173/shop/paypal-cancel",
+                // ✅ Use dynamic URL
+                return_url: `${clientUrl}/shop/paypal-return`,
+                cancel_url: `${clientUrl}/shop/paypal-cancel`,
             },
             transactions: [
                 {
@@ -44,7 +43,7 @@ const createOrder = async (req, res) => {
                         currency: "USD",
                         total: totalAmount.toFixed(2),
                     },
-                    description: "description",
+                    description: "E-commerce purchase",
                 },
             ],
         };
@@ -52,7 +51,6 @@ const createOrder = async (req, res) => {
         paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
             if (error) {
                 console.log(error);
-
                 return res.status(500).json({
                     success: false,
                     message: "Error while creating paypal payment",
@@ -95,6 +93,7 @@ const createOrder = async (req, res) => {
     }
 };
 
+// ✅ Rest of the code stays the same
 const capturePayment = async (req, res) => {
     try {
         const { paymentId, payerId, orderId } = req.body;
@@ -124,7 +123,6 @@ const capturePayment = async (req, res) => {
             }
 
             product.totalStock -= item.quantity;
-
             await product.save();
         }
 
@@ -147,11 +145,9 @@ const capturePayment = async (req, res) => {
     }
 };
 
-
 const getAllOrdersByUser = async (req, res) => {
     try {
         const { userId } = req.params;
-
         const orders = await Order.find({ userId });
 
         if (!orders.length) {
@@ -177,7 +173,6 @@ const getAllOrdersByUser = async (req, res) => {
 const getOrderDetails = async (req, res) => {
     try {
         const { id } = req.params;
-
         const order = await Order.findById(id);
 
         if (!order) {
