@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react"
 import ProductImageUpload from "@/components/admin-view/image-upload"
 import { useDispatch, useSelector } from "react-redux"
-import { addFeatureImage, getFeatureImages } from "@/store/common-slice"
+import { addFeatureImage, getFeatureImages, deleteFeatureImage } from "@/store/common-slice"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Upload, Image as ImageIcon, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 
 const AdminDashboard = () => {
   const [imageFile, setImageFile] = useState(null)
@@ -20,8 +22,26 @@ const AdminDashboard = () => {
         dispatch(getFeatureImages())
         setImageFile(null)
         setUploadedImageUrl("")
+        toast.success("Feature image uploaded successfully!")
+      } else {
+        toast.error("Failed to upload image")
       }
     })
+  }
+
+  // ✅ DELETE FUNCTION
+  function handleDeleteFeatureImage(id) {
+    // Show confirmation dialog
+    if (window.confirm("Are you sure you want to delete this feature image?")) {
+      dispatch(deleteFeatureImage(id)).then((data) => {
+        if (data?.payload?.success) {
+          dispatch(getFeatureImages())
+          toast.success("Feature image deleted successfully!")
+        } else {
+          toast.error("Failed to delete image")
+        }
+      })
+    }
   }
 
   useEffect(() => {
@@ -100,10 +120,12 @@ const AdminDashboard = () => {
                       className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center">
+                      {/* ✅ ADDED onClick handler */}
                       <Button
                         variant="destructive"
                         size="sm"
                         className="opacity-0 group-hover:opacity-100 transition-opacity gap-2"
+                        onClick={() => handleDeleteFeatureImage(featureImgItem._id)}
                       >
                         <Trash2 className="h-4 w-4" />
                         Remove

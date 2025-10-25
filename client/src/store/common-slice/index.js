@@ -6,31 +6,40 @@ const initialState = {
   featureImageList: [],
 };
 
-export const getFeatureImages = createAsyncThunk(
-  "/order/getFeatureImages",
-  async () => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/common/feature/get`
-    );
-
-    return response.data;
-  }
-);
-
 export const addFeatureImage = createAsyncThunk(
-  "/order/addFeatureImage",
+  "common/addFeatureImage",
   async (image) => {
     const response = await axios.post(
       `${import.meta.env.VITE_API_URL}/api/common/feature/add`,
       { image }
     );
+    return response.data;
+  }
+);
 
+export const getFeatureImages = createAsyncThunk(
+  "common/getFeatureImages",
+  async () => {
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/common/feature/get`
+    );
+    return response.data;
+  }
+);
+
+// ✅ ADD DELETE ACTION
+export const deleteFeatureImage = createAsyncThunk(
+  "common/deleteFeatureImage",
+  async (id) => {
+    const response = await axios.delete(
+      `${import.meta.env.VITE_API_URL}/api/common/feature/delete/${id}`
+    );
     return response.data;
   }
 );
 
 const commonSlice = createSlice({
-  name: "commonSlice",
+  name: "commonFeature",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
