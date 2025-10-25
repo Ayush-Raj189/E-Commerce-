@@ -78,11 +78,14 @@ cd e-commerce-project
 
 ### Backend Setup
 cd server
+
 npm install
 
 ### Frontend Setup
 cd ../client
+
 npm install
+
 npm run dev
 
 
