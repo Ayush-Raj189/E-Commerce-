@@ -2,17 +2,16 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const User = require("../../models/User")
 
-
 //register
 const registerUser = async (req, res) => {
   const { userName, email, password } = req.body;
 
   try {
-    const checkUser=await User.findOne({email})
-    if(checkUser){
+    const checkUser = await User.findOne({ email })
+    if (checkUser) {
       return res.status(400).json({
-        message:"User already exists with this email🚨",
-        success:false,
+        message: "User already exists with this email🚨",
+        success: false,
         error: true,
       })
     }
@@ -40,44 +39,56 @@ const registerUser = async (req, res) => {
   }
 }
 
-
-
 //login
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const checkUser=await User.findOne({email})
-    if(!checkUser){
+    const checkUser = await User.findOne({ email })
+    if (!checkUser) {
       return res.status(400).json({
-        message:"User does not exist🚨",
-        success:false,
+        message: "User does not exist🚨",
+        success: false,
         error: true,
       })
     }
-    const isPasswordMatched=await bcrypt.compare(password, checkUser.password)
-    if(!isPasswordMatched){
+    const isPasswordMatched = await bcrypt.compare(password, checkUser.password)
+    if (!isPasswordMatched) {
       return res.status(400).json({
-        message:"Incorrect password🚨",
-        success:false,
+        message: "Incorrect password🚨",
+        success: false,
         error: true,
       })
     }
-     
-    const token=jwt.sign({id:checkUser._id,role:checkUser.role,email:checkUser.email,userName:checkUser.userName},'CLIENT_SECRET_KEY',{expiresIn:"60m"})
 
-    res.cookie("token",token,{
-      httpOnly:true,
-      secure:true,
+    // ✅ Create JWT token with 7 days expiration
+    const token = jwt.sign(
+      {
+        id: checkUser._id,
+        role: checkUser.role,
+        email: checkUser.email,
+        userName: checkUser.userName
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }  // ✅ 7 days expiration
+    )
+
+    // ✅ Set cookie with 7 days expiration
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000  // ✅ 7 days in milliseconds
     })
+
     res.status(200).json({
-      message:"User logged in successfully 🎉",
-      success:true,
-      user:{
-        id:checkUser._id,
-        role:checkUser.role,
-        email:checkUser.email,
-        userName:checkUser.userName
+      message: "User logged in successfully 🎉",
+      success: true,
+      user: {
+        id: checkUser._id,
+        role: checkUser.role,
+        email: checkUser.email,
+        userName: checkUser.userName
       }
     })
   }
@@ -90,14 +101,17 @@ const loginUser = async (req, res) => {
   }
 }
 
-
 //logout
 const logoutUser = async (req, res) => {
   try {
-    res.clearCookie("token")
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    })
     res.status(200).json({
-      message:"User logged out successfully 🎉",
-      success:true,
+      message: "User logged out successfully 🎉",
+      success: true,
     })
   }
   catch (error) {
@@ -109,30 +123,29 @@ const logoutUser = async (req, res) => {
   }
 }
 
-
 //auth middleware
 const authMiddleware = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({
-      message:"Unauthorized User 🚨",
-      success:false,
+      message: "Unauthorized User 🚨",
+      success: false,
     })
   }
 
-  try{
-    const decodedData=jwt.verify(token,'CLIENT_SECRET_KEY')
-    req.user=decodedData
+  try {
+    const decodedData = jwt.verify(token, process.env.JWT_SECRET)
+    req.user = decodedData
     next()
   }
-  catch(error){
+  catch (error) {
     console.log(error)
     res.status(401).json({
-      message:"Unauthorized User 🚨",
-      success:false,
+      message: "Unauthorized User 🚨",
+      success: false,
     })
   }
 }
 
-module.exports = { registerUser,loginUser,logoutUser,authMiddleware }
+module.exports = { registerUser, loginUser, logoutUser, authMiddleware }
