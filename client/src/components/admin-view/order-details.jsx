@@ -164,7 +164,7 @@ const AdminOrderDetailsView = ({ orderDetails }) => {
             <div className="space-y-2.5 text-sm">
               <div className="flex items-start gap-2">
                 <User className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                <span>{orderDetails?.addressInfo?.userName}</span>
+                <span>{user?.userName}</span>
               </div>
               <div className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
